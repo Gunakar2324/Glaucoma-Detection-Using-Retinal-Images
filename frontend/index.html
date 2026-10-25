@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glaucoma AI - Automated Retinal Image Analysis</title>
+  <meta name="description"
+    content="AI-Based Glaucoma Screening from Retinal Fundus Images using Deep Learning CNN Segmentation & Cup-to-Disc Ratio (CDR)">
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon-wrap">
+          <svg class="eye-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+            <circle cx="12" cy="12" r="3" />
+            <circle cx="12" cy="12" r="1" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h2>Glaucoma AI</h2>
+          <span>Retinal Image Analysis</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#analyze" class="nav-item" data-view="analyze">
+          <i data-lucide="scan"></i>
+          <span>Analyze Image</span>
+        </a>
+        <a href="#patients" class="nav-item" data-view="patients">
+          <i data-lucide="users"></i>
+          <span>Patient Records</span>
+        </a>
+        <a href="#history" class="nav-item" data-view="history">
+          <i data-lucide="history"></i>
+          <span>Analysis History</span>
+        </a>
+        <a href="#performance" class="nav-item" data-view="performance">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Model Performance</span>
+        </a>
+        <a href="#reports" class="nav-item" data-view="reports">
+          <i data-lucide="file-text"></i>
+          <span>Reports</span>
+        </a>
+        <a href="#settings" class="nav-item" data-view="settings">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Bottom Banner with glowing retinal eye -->
+      <div class="sidebar-bottom-card">
+        <div class="retina-glow-wrapper">
+          <img src="/assets/retinal_eye_glow.jpg" alt="Retinal Biometric AI Scan" class="retina-glow-img">
+        </div>
+        <div class="retina-glow-text">
+          <span class="glow-title">Early Detection</span>
+          <span class="glow-sub">Healthier Vision</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="main-wrapper">
+      <!-- TOP HEADER BAR -->
+      <header class="top-header">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="globalSearchInput" placeholder="Search patient ID, name..." autocomplete="off">
+        </div>
+
+        <div class="header-right">
+          <button class="icon-button notification-btn" title="Notifications" id="notificationBtn">
+            <i data-lucide="bell"></i>
+            <span class="notify-badge"></span>
+          </button>
+
+          <div class="user-profile">
+            <div class="avatar-circle">G</div>
+            <div class="user-info">
+              <span class="user-name">Raj Kumar</span>
+              <span class="user-role">Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT CONTAINER (Switchable Views) -->
+      <main class="content-area" id="mainContent">
+
+        <!-- ============================================== -->
+        <!-- VIEW 1: DASHBOARD -->
+        <!-- ============================================== -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Dashboard</h1>
+              <p class="page-subtitle">AI-powered retinal image analysis for early glaucoma detection</p>
+            </div>
+            <div class="header-actions">
+              <button class="date-range-badge">
+                <i data-lucide="calendar"></i>
+                <span>01 Oct 2026 - 31 Oct 2026</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Top 4 Metric Cards -->
+          <div class="metrics-grid">
+            <!-- Card 1: Total Analyses -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap blue">
+                <i data-lucide="database"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Total Analyses</span>
+                <h3 class="metric-value" id="statTotalAnalyses">248</h3>
+                <span class="metric-badge green-badge">
+                  <i data-lucide="arrow-up"></i> 12% this month
+                </span>
+              </div>
+            </div>
+
+            <!-- Card 2: Glaucoma Detected -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap red">
+                <i data-lucide="eye"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Glaucoma Detected</span>
+                <h3 class="metric-value" id="statGlaucomaCount">72</h3>
+                <span class="metric-subtext" id="statGlaucomaSub">28.9% of total</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Normal Cases -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap green">
+                <i data-lucide="shield-check"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Normal Cases</span>
+                <h3 class="metric-value" id="statNormalCount">176</h3>
+                <span class="metric-subtext" id="statNormalSub">71.1% of total</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Avg. Processing Time -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap purple">
+                <i data-lucide="clock"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Avg. Processing Time</span>
+                <h3 class="metric-value" id="statProcTime">3.2s</h3>
+                <span class="metric-subtext">Per image</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Middle Split: Recent Analyses (Left) & Charts (Right) -->
+          <div class="dashboard-split-grid">
+            <!-- Left: Recent Analyses Table -->
+            <div class="panel-card recent-analyses-card">
+              <div class="panel-header">
+                <h3 class="panel-title">Recent Analyses</h3>
+                <a href="#history" class="view-all-link" id="viewAllAnalysesBtn">View All &rarr;</a>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="recentTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px">#</th>
+                      <th style="width: 70px">Image</th>
+                      <th>Patient ID</th>
+                      <th>Result</th>
+                      <th>Confidence</th>
+                      <th>Date & Time</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentTableBody">
+                    <!-- Populated via JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Donut Chart & Trend Chart -->
+            <div class="charts-column">
+              <!-- Widget 1: Donut Chart -->
+              <div class="panel-card chart-card">
+                <h3 class="panel-title">Glaucoma Detection Rate</h3>
+                <div class="donut-chart-wrapper">
+                  <div class="donut-svg-container" id="donutContainer">
+                    <!-- SVG rendered by charts.js -->
+                  </div>
+                  <div class="donut-legend">
+                    <div class="legend-item">
+                      <span class="legend-dot red"></span>
+                      <span class="legend-label" id="legendGlaucoma">Glaucoma (72)</span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="legend-dot green"></span>
+                      <span class="legend-label" id="legendNormal">Normal (176)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Widget 2: Monthly Trend -->
+              <div class="panel-card chart-card">
+                <div class="panel-header-compact">
+                  <h3 class="panel-title">Monthly Analysis Trend</h3>
+                  <div class="trend-legend">
+                    <span class="trend-item"><span class="legend-dot blue"></span> Total</span>
+                    <span class="trend-item"><span class="legend-dot red"></span> Glaucoma</span>
+                  </div>
+                </div>
+                <div class="trend-chart-container" id="trendContainer">
+                  <!-- Trend line SVG rendered by charts.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: ANALYZE RETINAL IMAGE -->
+        <!-- ============================================== -->
+        <section id="view-analyze" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Analyze Retinal Image</h1>
+              <p class="page-subtitle">Upload and analyze retinal fundus images using deep learning</p>
+            </div>
+          </div>
+
+          <!-- Top Split: Drag & Drop Upload Zone + Image Guidelines -->
+          <div class="analyze-top-grid">
+            <!-- Left: Upload Zone -->
+            <div class="panel-card upload-panel">
+              <div class="drop-zone" id="dropZone">
+                <input type="file" id="fileInput" accept="image/png, image/jpeg, image/jpg, image/tiff"
+                  style="display: none;">
+                <div class="upload-cloud-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.75">
+                    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                    <path d="M12 12v9" />
+                    <path d="m8 16 4-4 4 4" />
+                  </svg>
+                </div>
+                <h3 class="drop-title">Drag and drop a retinal image here</h3>
+                <p class="drop-sub">or <span class="browse-link" id="browseLink">click to browse files</span></p>
+                <p class="drop-formats">Supports JPG, PNG (Max 10 MB)</p>
+                <button class="primary-btn upload-btn" id="uploadBtn">
+                  <i data-lucide="upload"></i> Upload Image
+                </button>
+              </div>
+
+              <!-- Quick Patient Info Bar (Optional) -->
+              <div class="quick-patient-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Patient ID</label>
+                    <input type="text" id="quickPatientId" value="P009" placeholder="e.g. P009">
+                  </div>
+                  <div class="form-group">
+                    <label>Patient Name</label>
+                    <input type="text" id="quickPatientName" value="Alice Morgan" placeholder="e.g. Alice Morgan">
+                  </div>
+                  <div class="form-group">
+                    <label>Eye Tested</label>
+                    <select id="quickPatientEye">
+                      <option value="OD (Right Eye)">OD (Right Eye)</option>
+                      <option value="OS (Left Eye)">OS (Left Eye)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Image Guidelines Card -->
+            <div class="panel-card guidelines-panel">
+              <div class="panel-header">
+                <div class="guideline-header-title">
+                  <i data-lucide="clipboard-check" class="guide-icon"></i>
+                  <h3 class="panel-title">Image Guidelines</h3>
+                </div>
+              </div>
+              <ul class="guidelines-list">
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Use clear fundus images</span>
+                </li>
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Good illumination and focus</span>
+                </li>
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Center the optic disc</span>
+                </li>
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Supported formats: JPG, PNG</span>
+                </li>
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Maximum file size: 10 MB</span>
+                </li>
+                <li>
+                  <i data-lucide="check-circle-2" class="guide-check"></i>
+                  <span>Avoid blurry or low-quality images</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom: Sample Retinal Images Grid -->
+          <div class="sample-images-section">
+            <h3 class="section-title">Sample Retinal Images</h3>
+            <div class="samples-grid" id="samplesGrid">
+              <!-- Sample 1 -->
+              <div class="sample-card" data-sample="normal">
+                <div class="sample-img-wrap">
+                  <img src="/assets/samples/normal_retina.jpg" alt="Normal Retina" loading="lazy">
+                  <span class="sample-hover-badge">Analyze Sample &rarr;</span>
+                </div>
+                <div class="sample-caption">Normal Retina</div>
+              </div>
+
+              <!-- Sample 2 -->
+              <div class="sample-card" data-sample="glaucoma_early">
+                <div class="sample-img-wrap">
+                  <img src="/assets/samples/glaucoma_early.jpg" alt="Glaucoma Early" loading="lazy">
+                  <span class="sample-hover-badge">Analyze Sample &rarr;</span>
+                </div>
+                <div class="sample-caption">Glaucoma (Early)</div>
+              </div>
+
+              <!-- Sample 3 -->
+              <div class="sample-card" data-sample="glaucoma_advanced">
+                <div class="sample-img-wrap">
+                  <img src="/assets/samples/glaucoma_advanced.jpg" alt="Glaucoma Advanced" loading="lazy">
+                  <span class="sample-hover-badge">Analyze Sample &rarr;</span>
+                </div>
+                <div class="sample-caption">Glaucoma (Advanced)</div>
+              </div>
+
+              <!-- Sample 4 -->
+              <div class="sample-card" data-sample="sample4">
+                <div class="sample-img-wrap">
+                  <img src="/assets/samples/sample4.jpg" alt="Another Example" loading="lazy">
+                  <span class="sample-hover-badge">Analyze Sample &rarr;</span>
+                </div>
+                <div class="sample-caption">Another Example</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: ANALYSIS RESULT -->
+        <!-- ============================================== -->
+        <section id="view-result" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Analysis Result</h1>
+              <p class="page-subtitle">AI model prediction for glaucoma detection</p>
+            </div>
+            <div class="header-actions">
+              <button class="secondary-btn" id="printReportBtn">
+                <i data-lucide="printer"></i> Print
+              </button>
+              <button class="primary-btn" id="downloadPdfReportBtn">
+                <i data-lucide="download"></i> Download Report (PDF)
+              </button>
+            </div>
+          </div>
+
+          <div class="result-layout-grid">
+            <!-- Left Card: Analyzed Retinal Image -->
+            <div class="panel-card result-image-panel">
+              <h3 class="panel-title">Analyzed Retinal Image</h3>
+
+              <!-- View Mode Switcher Pills -->
+              <div class="image-mode-tabs">
+                <button class="mode-tab-btn active" data-mode="original">Original</button>
+                <button class="mode-tab-btn" data-mode="overlay">Overlay + VCDR</button>
+                <button class="mode-tab-btn" data-mode="mask">AI Segmentation Mask</button>
+              </div>
+
+              <!-- Main Image Display Container -->
+              <div class="result-display-frame" id="resultDisplayFrame">
+                <img id="resultImagePreview" src="/assets/samples/glaucoma_advanced.jpg" alt="Analyzed Retina">
+                <button class="fullscreen-btn" id="fullscreenImgBtn" title="View Fullscreen">
+                  <i data-lucide="maximize-2"></i>
+                </button>
+                <div class="mask-color-legend" id="maskLegend" style="display: none;">
+                  <span class="mask-leg-item"><span class="disc-dot"></span> Optic Disc (Green)</span>
+                  <span class="mask-leg-item"><span class="cup-dot"></span> Optic Cup (Red)</span>
+                </div>
+              </div>
+
+              <!-- File Info Bar -->
+              <div class="file-info-bar">
+                <div class="file-info-left">
+                  <i data-lucide="file-image" class="file-icon"></i>
+                  <div class="file-text">
+                    <span class="filename" id="resultFilename">P001_retina.jpg</span>
+                    <span class="file-meta" id="resultFileMeta">1.2 MB | 1024 × 1024</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Analyze Another Image Button -->
+              <button class="analyze-another-btn" id="analyzeAnotherBtn">
+                <i data-lucide="refresh-cw"></i> Analyze Another Image
+              </button>
+            </div>
+
+            <!-- Right Card: Diagnosis & Key Findings -->
+            <div class="result-details-column">
+              <!-- Alert Status Box -->
+              <div class="alert-banner alert-danger" id="resultAlertBanner">
+                <div class="alert-icon-wrap" id="alertIconWrap">
+                  <i data-lucide="eye" id="alertLucideIcon"></i>
+                </div>
+                <div class="alert-text-wrap">
+                  <h2 class="alert-title" id="resultStatusTitle">Glaucoma Detected</h2>
+                  <p class="alert-subtitle" id="resultStatusSubtitle">The model predicts a high likelihood of glaucoma.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Key Metrics Card -->
+              <div class="panel-card metrics-table-panel">
+                <div class="metric-row">
+                  <span class="metric-row-label">Prediction Class</span>
+                  <span class="status-pill status-pill-red" id="resultPredictionBadge">Glaucoma</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-row-label">Confidence Score</span>
+                  <span class="metric-row-value bold" id="resultConfidence">92.4%</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-row-label">Risk Level</span>
+                  <span class="status-pill status-pill-red" id="resultRiskBadge">High</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-row-label">Vertical Cup-to-Disc Ratio (VCDR)</span>
+                  <span class="metric-row-value bold highlight" id="resultVcdr">0.78</span>
+                </div>
+                <div class="metric-row sub-metric">
+                  <span class="metric-row-label">Diagnostic Threshold</span>
+                  <span class="metric-row-value muted">Normal &lt; 0.60 | Suspect 0.60 - 0.70 | Glaucoma &ge;
+                    0.70</span>
+                </div>
+              </div>
+
+              <!-- Key Findings Card -->
+              <div class="panel-card key-findings-panel">
+                <div class="findings-header">
+                  <i data-lucide="clipboard-list" class="findings-icon"></i>
+                  <h3 class="panel-title">Key Findings</h3>
+                </div>
+                <ul class="findings-list" id="resultFindingsList">
+                  <li><span class="bullet-diamond">&#9670;</span> Enlarged optic cup to disc ratio</li>
+                  <li><span class="bullet-diamond">&#9670;</span> Thinning of neuroretinal rim</li>
+                  <li><span class="bullet-diamond">&#9670;</span> Possible optic nerve damage</li>
+                  <li><span class="bullet-diamond">&#9670;</span> Features consistent with glaucoma</li>
+                </ul>
+              </div>
+
+              <!-- Clinical Caution Alert -->
+              <div class="caution-box">
+                <i data-lucide="alert-triangle" class="caution-icon"></i>
+                <p class="caution-text">
+                  <strong>Note:</strong> This is an AI-based prediction and should be reviewed by a qualified
+                  ophthalmologist for final diagnosis.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 4: PREVIOUS ANALYSES (ANALYSIS HISTORY) -->
+        <!-- ============================================== -->
+        <section id="view-history" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Previous Analyses</h1>
+              <p class="page-subtitle">View and manage analyzed retinal images</p>
+            </div>
+            <div class="header-actions">
+              <button class="secondary-btn" id="exportHistoryCsvBtn">
+                <i data-lucide="download"></i> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- History Filter Bar -->
+          <div class="panel-card filter-card">
+            <div class="filter-bar">
+              <div class="filter-input-wrap search-filter">
+                <i data-lucide="search" class="filter-icon"></i>
+                <input type="text" id="historySearchInput" placeholder="Search by patient ID, name or result...">
+              </div>
+
+              <div class="filter-input-wrap date-filter">
+                <i data-lucide="calendar" class="filter-icon"></i>
+                <input type="text" id="historyDateInput" placeholder="Select Date Range"
+                  value="01 Oct 2026 - 31 Oct 2026">
+              </div>
+
+              <div class="filter-input-wrap select-filter">
+                <select id="historyResultFilter">
+                  <option value="All">All Results</option>
+                  <option value="Glaucoma">Glaucoma</option>
+                  <option value="Normal">Normal</option>
+                </select>
+              </div>
+
+              <button class="primary-btn search-filter-btn" id="historySearchBtn">
+                <i data-lucide="search"></i> Search
+              </button>
+            </div>
+          </div>
+
+          <!-- History Table Card -->
+          <div class="panel-card history-table-panel">
+            <div class="table-responsive">
+              <table class="data-table history-table" id="historyTable">
+                <thead>
+                  <tr>
+                    <th style="width: 40px">#</th>
+                    <th style="width: 70px">Image</th>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Result</th>
+                    <th>Confidence</th>
+                    <th>Date & Time</th>
+                    <th style="width: 100px; text-align: center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+              <div class="pagination-info" id="paginationInfo">Showing 1 to 8 of 8 entries</div>
+              <div class="pagination-buttons">
+                <button class="page-btn disabled" id="prevPageBtn">Previous</button>
+                <button class="page-btn active" id="page1Btn">1</button>
+                <button class="page-btn disabled" id="nextPageBtn">Next</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 5: PATIENT RECORDS -->
+        <!-- ============================================== -->
+        <section id="view-patients" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Patient Records</h1>
+              <p class="page-subtitle">Directory of registered patients, ocular history, and scheduled scans</p>
+            </div>
+            <div class="header-actions">
+              <button class="primary-btn" id="addPatientBtn">
+                <i data-lucide="user-plus"></i> New Patient
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="table-responsive">
+              <table class="data-table" id="patientsTable">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Full Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Contact</th>
+                    <th>Last Scan</th>
+                    <th>Diagnosis</th>
+                    <th>Risk</th>
+                    <th>Doctor</th>
+                    <th style="text-align: center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 6: MODEL PERFORMANCE -->
+        <!-- ============================================== -->
+        <section id="view-performance" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Model Performance & Validation</h1>
+              <p class="page-subtitle">Quantitative evaluation of Multi-Fold U-Net CNN Ensemble on REFUGE & ORIGA
+                benchmarks</p>
+            </div>
+          </div>
+
+          <!-- Performance Metric Cards -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-wrap blue">
+                <i data-lucide="layers"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Mean Dice Score</span>
+                <h3 class="metric-value">0.8937</h3>
+                <span class="metric-subtext">&plusmn; 0.0013 across 5 folds</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap green">
+                <i data-lucide="circle-dot"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Disc Dice Score</span>
+                <h3 class="metric-value">0.9038</h3>
+                <span class="metric-subtext">&plusmn; 0.0019 (High boundary fidelity)</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap red">
+                <i data-lucide="disc"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Cup Dice Score</span>
+                <h3 class="metric-value">0.8836</h3>
+                <span class="metric-subtext">&plusmn; 0.0033 (Precise cup excavation)</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap purple">
+                <i data-lucide="activity"></i>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">ROC - AUC</span>
+                <h3 class="metric-value">0.962</h3>
+                <span class="metric-badge green-badge">Clinical Grade</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5-Fold Evaluation Table Card -->
+          <div class="panel-card" style="margin-top: 24px;">
+            <div class="panel-header">
+              <h3 class="panel-title">5-Fold Cross-Validation Performance Breakdown</h3>
+              <span class="model-badge">U-Net Backbone &bull; 256&times;256 Resolution &bull; ONNX FP16</span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Fold Split</th>
+                    <th>Disc Dice</th>
+                    <th>Cup Dice</th>
+                    <th>Mean Dice</th>
+                    <th>Sensitivity</th>
+                    <th>Specificity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Fold 0</strong></td>
+                    <td>0.9045</td>
+                    <td>0.8841</td>
+                    <td>0.8943</td>
+                    <td>93.8%</td>
+                    <td>92.1%</td>
+                    <td><span class="status-pill status-pill-green">Verified</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fold 1</strong></td>
+                    <td>0.9022</td>
+                    <td>0.8812</td>
+                    <td>0.8917</td>
+                    <td>92.9%</td>
+                    <td>91.4%</td>
+                    <td><span class="status-pill status-pill-green">Verified</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fold 2</strong></td>
+                    <td>0.9051</td>
+                    <td>0.8859</td>
+                    <td>0.8955</td>
+                    <td>94.1%</td>
+                    <td>92.5%</td>
+                    <td><span class="status-pill status-pill-green">Verified</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fold 3</strong></td>
+                    <td>0.9019</td>
+                    <td>0.8824</td>
+                    <td>0.8921</td>
+                    <td>92.7%</td>
+                    <td>91.2%</td>
+                    <td><span class="status-pill status-pill-green">Verified</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fold 4</strong></td>
+                    <td>0.9053</td>
+                    <td>0.8844</td>
+                    <td>0.8948</td>
+                    <td>93.6%</td>
+                    <td>91.9%</td>
+                    <td><span class="status-pill status-pill-green">Verified</span></td>
+                  </tr>
+                  <tr style="background: #f8fafc; font-weight: 700;">
+                    <td>Ensemble Mean</td>
+                    <td>0.9038 &plusmn; 0.0019</td>
+                    <td>0.8836 &plusmn; 0.0033</td>
+                    <td>0.8937 &plusmn; 0.0013</td>
+                    <td>93.4%</td>
+                    <td>91.8%</td>
+                    <td><span class="status-pill status-pill-blue">Active Engine</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 7: REPORTS -->
+        <!-- ============================================== -->
+        <section id="view-reports" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Diagnostic Screening Reports</h1>
+              <p class="page-subtitle">Generate, review, and export standardized ophthalmic screening documentation</p>
+            </div>
+            <div class="header-actions">
+              <button class="primary-btn" id="generateBatchReportBtn">
+                <i data-lucide="file-plus"></i> Generate Monthly Report
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="report-summary-box">
+              <div class="report-summary-item">
+                <span class="rep-label">Screening Period</span>
+                <span class="rep-val">October 2026 (Monthly)</span>
+              </div>
+              <div class="report-summary-item">
+                <span class="rep-label">Total Eyes Screened</span>
+                <span class="rep-val">248 Scans</span>
+              </div>
+              <div class="report-summary-item">
+                <span class="rep-label">Positivity Rate</span>
+                <span class="rep-val" style="color: #dc2626;">28.9% (72 Glaucoma)</span>
+              </div>
+              <div class="report-summary-item">
+                <span class="rep-label">Examiner</span>
+                <span class="rep-val">Dr. Raj Kumar, MD</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <h3 class="panel-title" style="margin-bottom: 16px;">Available Screening Reports</h3>
+              <div class="reports-list">
+                <div class="report-item">
+                  <div class="rep-icon"><i data-lucide="file-text"></i></div>
+                  <div class="rep-details">
+                    <span class="rep-title">October 2026 Clinical Summary &amp; CDR Distribution.pdf</span>
+                    <span class="rep-meta">Generated 24 Oct 2026 &bull; 2.4 MB &bull; 248 records</span>
+                  </div>
+                  <button class="secondary-btn btn-sm" onclick="alert('Downloading October Clinical Summary...')">
+                    <i data-lucide="download"></i> Download
+                  </button>
+                </div>
+                <div class="report-item">
+                  <div class="rep-icon"><i data-lucide="file-spreadsheet"></i></div>
+                  <div class="rep-details">
+                    <span class="rep-title">Glaucoma_Screening_Dataset_Export_Q4_2026.csv</span>
+                    <span class="rep-meta">Updated today &bull; 148 KB &bull; All patients and VCDR values</span>
+                  </div>
+                  <button class="secondary-btn btn-sm" id="downloadCsvDirectBtn">
+                    <i data-lucide="download"></i> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 8: SETTINGS -->
+        <!-- ============================================== -->
+        <section id="view-settings" class="view-section">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Settings &amp; System Configuration</h1>
+              <p class="page-subtitle">Configure diagnostic sensitivity thresholds, institution branding, and AI runtime
+              </p>
+            </div>
+            <div class="header-actions">
+              <button class="primary-btn" id="saveSettingsBtn">
+                <i data-lucide="save"></i> Save Changes
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Settings Card 1: Clinical Thresholds -->
+            <div class="panel-card">
+              <h3 class="panel-title" style="margin-bottom: 20px;">Diagnostic CDR Thresholds</h3>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Glaucoma Confirmed Threshold (Vertical CDR &ge;)</label>
+                  <input type="number" id="settingGlaucomaThreshold" step="0.05" min="0.5" max="0.9" value="0.70">
+                  <span class="field-hint">Standard ophthalmology consensus: VCDR &ge; 0.70 indicates high risk of
+                    glaucomatous neuropathy.</span>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                  <label>Glaucoma Suspect Threshold (Vertical CDR &ge;)</label>
+                  <input type="number" id="settingSuspectThreshold" step="0.05" min="0.4" max="0.7" value="0.60">
+                  <span class="field-hint">VCDR between 0.60 and 0.70 flags patient as borderline suspect for follow-up
+                    testing.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings Card 2: Institution Branding -->
+            <div class="panel-card">
+              <h3 class="panel-title" style="margin-bottom: 20px;">Institution &amp; Physician Profile</h3>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Clinic / Hospital Name</label>
+                  <input type="text" id="settingClinicName" value="Glaucoma AI Vision Institute">
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                  <label>Lead Ophthalmologist / Examiner</label>
+                  <input type="text" id="settingDoctorName" value="Dr. Raj Kumar, MD (Ophthalmology)">
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                  <label>AI Hardware Execution Provider</label>
+                  <select id="settingDeviceMode">
+                    <option value="CPU (ONNXRuntime FP16)">CPU (ONNXRuntime FP16 Quantized - Active)</option>
+                    <option value="DirectML (Windows GPU Acceleration)">DirectML (Windows GPU Acceleration)</option>
+                    <option value="CUDA (NVIDIA TensorRT)">CUDA (NVIDIA TensorRT)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- AI INFERENCE SCANNING MODAL OVERLAY -->
+  <div class="modal-overlay" id="scanningModal">
+    <div class="scan-modal-card">
+      <div class="scanner-optic-circle">
+        <img src="/assets/retinal_eye_glow.jpg" alt="Scanning" class="modal-scan-img">
+        <div class="scanner-laser-beam"></div>
+      </div>
+      <h3 class="modal-title">Analyzing Retinal Image...</h3>
+      <p class="modal-desc" id="scanStepText">Loading fundus image into U-Net CNN...</p>
+      <div class="progress-track">
+        <div class="progress-fill" id="scanProgressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE FULLSCREEN MODAL -->
+  <div class="modal-overlay" id="fullscreenModal">
+    <div class="fullscreen-content-card">
+      <button class="close-modal-btn" id="closeFullscreenBtn">&times;</button>
+      <img id="fullscreenImgTarget" src="" alt="Expanded View">
+    </div>
+  </div>
+
+  <!-- CLINICAL PRINT REPORT CONTAINER (Hidden until printed) -->
+  <div id="printReportContainer" class="print-only"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="/js/charts.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>

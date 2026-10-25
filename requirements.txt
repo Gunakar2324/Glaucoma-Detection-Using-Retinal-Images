@@ -1,0 +1,19 @@
+# Web Application & Inference
+fastapi>=0.100.0
+uvicorn>=0.20.0
+onnxruntime>=1.15.0
+pillow>=9.5.0
+numpy>=1.24.0
+opencv-python>=4.7.0
+reportlab>=4.0.0
+python-multipart>=0.0.6
+requests>=2.31.0
+
+# Deep Learning & Training Pipeline (ml_pipeline)
+torch>=2.0.0
+torchvision>=0.15.0
+albumentations>=1.3.0
+scikit-learn>=1.2.0
+
+# Alternate Streamlit Demo (streamlit_app)
+streamlit>=1.25.0
